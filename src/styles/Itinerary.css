@@ -1,0 +1,184 @@
+/* Itinerary Page Styling - Aurora Theme */
+@import './aurora-theme.css';
+
+.itinerary-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Trip Header Card */
+.trip-info {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+}
+
+.trip-stats-inline {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.mini-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.mini-stat .label {
+  font-size: 11px;
+  color: var(--aurora-grey, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mini-stat .value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #38BDF8;
+}
+
+.trip-info h2 {
+  font-size: 2.5rem;
+  margin: 0 0 10px;
+  background: var(--gradient-aurora, linear-gradient(135deg, #8B5CF6 0%, #38BDF8 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+}
+
+.trip-dates {
+  color: var(--aurora-cyan, #38BDF8);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.trip-description {
+  color: var(--aurora-grey, #9CA3AF);
+  font-size: 1rem;
+  margin-top: 15px;
+  line-height: 1.6;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  color: var(--aurora-grey, #9CA3AF);
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.tab-btn.active {
+  background: var(--gradient-aurora, linear-gradient(135deg, #8B5CF6 0%, #38BDF8 100%));
+  color: white;
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+}
+
+/* Tab Content Box */
+.tab-content {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  padding: 35px;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Itinerary Section */
+.days-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.btn-add-day {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+/* Empty States */
+.empty-section {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-section p {
+  color: var(--aurora-grey, #9CA3AF);
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+/* Loader Styling */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: white;
+}
+
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #38BDF8;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .trip-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .trip-info h2 {
+    font-size: 2rem;
+  }
+  
+  .tabs {
+    flex-direction: column;
+  }
+}

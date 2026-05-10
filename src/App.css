@@ -1,0 +1,85 @@
+/* Import Aurora Theme */
+@import './styles/aurora-theme.css';
+
+/* Global App Styles */
+html, body {
+  background: var(--aurora-deep-navy);
+  color: var(--aurora-white);
+}
+
+.btn-primary {
+  padding: 10px 24px;
+  background: var(--gradient-aurora);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--aurora-white);
+  border: 1.5px solid var(--aurora-cyan);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: var(--aurora-accent-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.2);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  padding: 10px 12px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--aurora-white);
+  transition: var(--transition-smooth);
+  font-size: 14px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--aurora-cyan);
+  background: rgba(56, 189, 248, 0.1);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+}

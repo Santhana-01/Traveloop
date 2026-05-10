@@ -1,0 +1,109 @@
+/* Day Section & Activity Cards - Simplified Aurora */
+@import '../styles/aurora-theme.css';
+
+.day-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 30px;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.day-title h3 {
+  margin: 0;
+  font-size: 20px;
+  color: white;
+  font-weight: 700;
+}
+
+/* Activity Card Layout */
+.activity-card.simplified {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: all 0.2s;
+}
+
+.activity-card.simplified:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.activity-top-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 8px;
+}
+
+.activity-top-row h4 {
+  margin: 0;
+  font-size: 17px;
+  color: white;
+}
+
+.activity-time-badge {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38BDF8;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.activity-notes {
+  font-size: 13px;
+  color: #94A3B8;
+  margin: 0;
+}
+
+/* Actions */
+.activity-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.act-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.act-btn.edit { color: #38BDF8; }
+.act-btn.delete { color: #ef4444; }
+
+.act-btn:hover { text-decoration: underline; }
+
+/* Add Activity Button */
+.btn-add-activity {
+  width: 100%;
+  padding: 12px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px dashed rgba(56, 189, 248, 0.4);
+  border-radius: 10px;
+  color: var(--aurora-cyan, #38BDF8);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-add-activity:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-style: solid;
+}

@@ -1,0 +1,224 @@
+/* User Profile Page Styling - Aurora Theme */
+@import './aurora-theme.css';
+
+.profile-page-container {
+  background: var(--aurora-deep-navy, #0B1020);
+  min-height: 100vh;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 40px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.profile-photo img, .photo-placeholder {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--gradient-aurora, linear-gradient(135deg, #8B5CF6 0%, #38BDF8 100%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+}
+
+.profile-info h2 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+  color: white;
+}
+
+.profile-info p {
+  color: var(--aurora-grey, #9CA3AF);
+  margin-bottom: 20px;
+}
+
+/* Stats */
+.stats-section {
+  margin-bottom: 2.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.stat {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #38BDF8;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--aurora-grey, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Saved Destinations Section - Tightened Space */
+.saved-dest-section {
+  margin-bottom: 3rem;
+}
+
+.saved-dest-section h3 {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.add-destination {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem; /* Tightened */
+}
+
+.add-destination input {
+  flex: 1;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 8px;
+  color: white;
+}
+
+.destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Tightened */
+}
+
+.dest-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border-left: 4px solid #38BDF8;
+}
+
+.dest-info strong {
+  display: block;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.dest-info p {
+  margin: 0;
+  color: var(--aurora-grey, #9CA3AF);
+  font-size: 0.85rem;
+}
+
+.btn-delete-small {
+  padding: 8px 15px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete-small:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: scale(1.05);
+}
+
+/* Profile Footer - Logout */
+.profile-footer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.btn-logout-large {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout-large:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(239, 68, 68, 0.3);
+  filter: brightness(1.2);
+}
+
+/* Empty Message */
+.empty-message {
+  padding: 20px;
+  text-align: center;
+  color: var(--aurora-grey, #9CA3AF);
+  font-style: italic;
+}
+
+/* Generic Buttons */
+.btn-primary {
+  padding: 10px 20px;
+  background: var(--gradient-aurora, linear-gradient(135deg, #8B5CF6 0%, #38BDF8 100%));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Edit Form */
+.edit-form {
+  margin-bottom: 2rem;
+  padding: 20px;
+  background: rgba(56, 189, 248, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}

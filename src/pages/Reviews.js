@@ -54,7 +54,7 @@ function Reviews() {
     }
 
     try {
-      const response = await reviewsApi.createReview(tripId, formData);
+      const response = await reviewsApi.addReview(tripId, formData);
       if (response.success) {
         setReviews([response.review, ...reviews]);
         setStats(response.stats);
@@ -72,7 +72,7 @@ function Reviews() {
     if (!window.confirm('Delete your review?')) return;
 
     try {
-      const response = await reviewsApi.deleteReview(tripId, reviewId);
+      const response = await reviewsApi.deleteReview(reviewId);
       if (response.success) {
         setReviews(reviews.filter(r => r._id !== reviewId));
         setStats(response.stats);
@@ -107,13 +107,7 @@ function Reviews() {
   };
 
   return (
-    <>
-      <Header
-        title="Trip Reviews"
-        showBackButton
-        onBack={() => navigate(`/trip/${tripId}`)}
-      />
-      <div className="reviews-container">
+    <div className="reviews-container">
         {message && <div className="success-message">{message}</div>}
 
         {/* Rating Summary */}
@@ -240,7 +234,6 @@ function Reviews() {
 
         {loading && <div className="loading">Loading reviews...</div>}
       </div>
-    </>
   );
 }
 

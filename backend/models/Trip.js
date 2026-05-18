@@ -68,6 +68,10 @@ const TripSchema = new mongoose.Schema(
       }
     ],
     budget: {
+      total: {
+        type: Number,
+        default: 0
+      },
       transport: {
         type: Number,
         default: 0
@@ -83,13 +87,30 @@ const TripSchema = new mongoose.Schema(
       activity: {
         type: Number,
         default: 0
+      },
+      miscellaneous: {
+        type: Number,
+        default: 0
       }
     },
+    expenses: [
+      {
+        description: { type: String, required: true },
+        amount: { type: Number, required: true },
+        category: {
+          type: String,
+          enum: ['Hotel', 'Transport', 'Food', 'Activities', 'Miscellaneous'],
+          required: true
+        },
+        date: { type: Date, default: Date.now }
+      }
+    ],
     actualSpent: {
       transport: { type: Number, default: 0 },
       stay: { type: Number, default: 0 },
       food: { type: Number, default: 0 },
-      activity: { type: Number, default: 0 }
+      activity: { type: Number, default: 0 },
+      miscellaneous: { type: Number, default: 0 }
     },
     tags: [String],
     reminderEmail: {

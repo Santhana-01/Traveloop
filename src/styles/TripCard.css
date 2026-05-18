@@ -1,49 +1,62 @@
+/* Trip Card Component - Ocean Vibes */
+@import './aurora-theme.css';
+
 .trip-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-smooth);
   display: flex;
   flex-direction: column;
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
 .trip-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  border-color: var(--ocean-blue);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
 }
 
 .trip-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 1rem;
 }
 
 .trip-card-header h3 {
-  font-size: 20px;
-  color: #333;
+  font-size: 1.25rem;
+  color: var(--ocean-white);
   margin: 0;
   flex: 1;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
 }
 
 .trip-dates-badge {
-  background: #f0f0f0;
-  color: #666;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+  background: rgba(71, 181, 255, 0.15);
+  color: var(--ocean-blue);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
   white-space: nowrap;
-  margin-left: 8px;
+  border: 1px solid rgba(71, 181, 255, 0.2);
 }
 
 .trip-description {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 16px;
-  line-height: 1.5;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -52,10 +65,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-bottom: 16px;
-  padding: 12px 0;
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 1.5rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stat {
@@ -65,20 +78,23 @@
 }
 
 .stat-label {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.7rem;
+  color: var(--ocean-blue);
   margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
 }
 
 .stat-value {
-  font-size: 18px;
-  font-weight: 700;
-  color: #667eea;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ocean-white);
 }
 
 .trip-card-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: auto;
 }
 
@@ -86,44 +102,30 @@
 .btn-delete {
   flex: 1;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-edit {
-  background: #f0f0f0;
-  color: #333;
+  transition: var(--transition-fast);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ocean-white);
 }
 
 .btn-edit:hover {
-  background: #e0e0e0;
-}
-
-.btn-delete {
-  background: #fee;
-  color: #c00;
-  border-color: #fcc;
+  background: var(--ocean-blue);
+  color: var(--ocean-deep);
+  border-color: var(--ocean-blue);
 }
 
 .btn-delete:hover {
-  background: #fdd;
+  background: var(--ocean-coral);
+  color: white;
+  border-color: var(--ocean-coral);
 }
 
 @media (max-width: 480px) {
-  .trip-card-header {
-    flex-direction: column;
-  }
-
-  .trip-dates-badge {
-    margin-left: 0;
-    margin-top: 8px;
-  }
-
-  .trip-stats {
-    grid-template-columns: 1fr;
-  }
+  .trip-card-header { flex-direction: column; gap: 8px; }
+  .trip-dates-badge { margin-left: 0; }
+  .trip-stats { grid-template-columns: 1fr; gap: 15px; }
 }

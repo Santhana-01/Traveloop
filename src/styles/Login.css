@@ -3,31 +3,33 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:
+    radial-gradient(circle at top left, rgba(153, 184, 152, 0.18), transparent 32%),
+    radial-gradient(circle at 80% 12%, rgba(254, 206, 171, 0.38), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(232, 74, 95, 0.18), transparent 30%),
+    linear-gradient(135deg, #fffaf2 0%, #f5efe7 44%, #fdf2eb 100%);
 }
 
 .login-card {
-  background: white;
+  background: rgba(255, 251, 244, 0.9);
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 18px 50px rgba(42, 54, 59, 0.14);
   width: 100%;
   max-width: 400px;
+  border: 1px solid rgba(153, 184, 152, 0.2);
 }
 
 .login-card h1 {
   text-align: center;
   font-size: 32px;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #000000;
 }
 
 .subtitle {
   text-align: center;
-  color: #666;
+  color: #5d6a66;
   margin-bottom: 32px;
   font-size: 14px;
 }
@@ -40,14 +42,14 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #333;
+  color: #000000;
   font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(153, 184, 152, 0.3);
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s;
@@ -55,18 +57,15 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--aurora-cyan);
+  box-shadow: 0 0 0 3px rgba(153, 184, 152, 0.14);
 }
 
 .login-btn {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  background: var(--gradient-aurora);
+  color: #000000;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -75,22 +74,22 @@
 
 .login-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 12px 24px rgba(232, 74, 95, 0.22);
 }
 
 .error-message {
-  background: #fee;
-  color: #c00;
+  background: rgba(232, 74, 95, 0.1);
+  color: #b4233a;
   padding: 12px;
   border-radius: 6px;
   margin-bottom: 16px;
   font-size: 14px;
-  border-left: 4px solid #c00;
+  border-left: 4px solid #E84A5F;
 }
 
 .demo-note {
   text-align: center;
-  color: #999;
+  color: #5d6a66;
   font-size: 12px;
   margin-top: 16px;
 }

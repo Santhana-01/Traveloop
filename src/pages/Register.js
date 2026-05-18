@@ -55,7 +55,7 @@ function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>🌍 Traveloop</h1>
+        <h1>Traveloop</h1>
         <p className="subtitle">Create Your Account</p>
         
         <form onSubmit={handleSubmit}>

@@ -11,10 +11,10 @@ const {
 } = require('../controllers/packingController');
 
 // Add packing item
-router.post('/:tripId/packing', auth, addPackingItem);
+router.post('/trips/:tripId', auth, addPackingItem);
 
 // Get packing items
-router.get('/:tripId/packing', auth, getPackingItems);
+router.get('/trips/:tripId', auth, getPackingItems);
 
 // Update packing item
 router.put('/:itemId', auth, updatePackingItem);
@@ -26,6 +26,6 @@ router.delete('/:itemId', auth, deletePackingItem);
 router.put('/:itemId/toggle', auth, togglePackingStatus);
 
 // Reset packing list
-router.delete('/:tripId/packing/reset', auth, resetPackingList);
+router.delete('/trips/:tripId/reset', auth, resetPackingList);
 
 module.exports = router;

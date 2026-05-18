@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: './.env' });
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -34,9 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/trips', require('./routes/trips'));
 app.use('/api/trips', require('./routes/destinations'));
-app.use('/api/destinations', require('./routes/activities'));
-app.use('/api/trips', require('./routes/packing'));
-app.use('/api/trips', require('./routes/notes'));
+app.use('/api', require('./routes/activities'));
+app.use('/api/packing', require('./routes/packing'));
+app.use('/api/notes', require('./routes/notes'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/users', require('./routes/users'));
 

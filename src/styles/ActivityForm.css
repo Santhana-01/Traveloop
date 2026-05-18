@@ -1,4 +1,4 @@
-/* Activity Form - Aurora Theme */
+/* Activity Form - Ocean Vibes */
 @import '../styles/aurora-theme.css';
 
 .activity-form-overlay {
@@ -7,8 +7,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(4, 26, 41, 0.85);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,99 +17,56 @@
 }
 
 .activity-form {
-  background: #0F172A;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
   width: 100%;
   max-width: 550px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 30px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-  animation: slideInUp 0.3s ease-out;
-}
-
-@keyframes slideInUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  padding: 3rem;
+  box-shadow: var(--shadow-lg);
+  animation: slideInUp 0.4s ease-out;
 }
 
 .activity-form h3 {
-  margin: 0 0 25px;
-  font-size: 24px;
-  color: white;
+  margin: 0 0 2rem;
+  font-size: 1.8rem;
+  color: var(--ocean-white);
   text-align: center;
-  background: var(--gradient-aurora, linear-gradient(135deg, #8B5CF6 0%, #38BDF8 100%));
+  background: var(--gradient-wave);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
 }
 
-.activity-form .form-group {
-  margin-bottom: 20px;
-}
-
-.activity-form label {
-  display: block;
-  font-size: 12px;
+.activity-form .form-group label {
+  color: var(--ocean-cyan) !important;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  color: var(--aurora-grey, #9CA3AF);
-  margin-bottom: 8px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.activity-form input,
-.activity-form select,
-.activity-form textarea {
-  width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 10px;
-  color: white;
-  font-size: 14px;
-  transition: all 0.3s;
-}
-
-.activity-form input:focus,
-.activity-form select:focus,
-.activity-form textarea:focus {
-  outline: none;
-  border-color: var(--aurora-cyan, #38BDF8);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+  letter-spacing: 0.1em;
+  font-weight: 700;
 }
 
 .activity-form .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
+  gap: 1.5rem;
 }
 
 .activity-form .form-actions {
   display: flex;
-  gap: 15px;
-  margin-top: 30px;
-}
-
-.activity-form .form-actions button {
-  flex: 1;
-  padding: 14px;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .activity-form ::placeholder {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.2);
 }
 
-/* Custom Scrollbar for Form */
-.activity-form::-webkit-scrollbar {
-  width: 6px;
-}
-.activity-form::-webkit-scrollbar-track {
-  background: transparent;
-}
-.activity-form::-webkit-scrollbar-thumb {
-  background: rgba(56, 189, 248, 0.2);
-  border-radius: 10px;
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }

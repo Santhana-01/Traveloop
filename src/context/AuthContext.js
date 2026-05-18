@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { authApi, setAuthToken, clearAuthToken, getAuthToken } from '../api/client';
+import { storageUtils } from '../utils/storage';
 
 export const AuthContext = createContext();
 
@@ -11,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   // Check if token exists and user is logged in
   useEffect(() => {
     const checkAuth = async () => {
+      const localUser = storageUtils.getUser();
       const token = getAuthToken();
       if (token) {
         try {
@@ -19,11 +21,20 @@ export const AuthProvider = ({ children }) => {
             setUser(response.user);
           } else {
             clearAuthToken();
+            if (localUser) {
+              setUser(localUser);
+            }
           }
         } catch (err) {
           clearAuthToken();
-          setUser(null);
+          if (localUser) {
+            setUser(localUser);
+          } else {
+            setUser(null);
+          }
         }
+      } else if (localUser) {
+        setUser(localUser);
       }
       setLoading(false);
     };
@@ -34,7 +45,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       setError(null);
-      const response = await authApi.register(name, email, password);
+      let response;
+
+      try {
+        response = await authApi.register(name, email, password);
+      } catch (apiError) {
+        response = storageUtils.registerAuthUser({ name, email, password });
+      }
+
       if (response.success) {
         setAuthToken(response.token);
         setUser(response.user);
@@ -50,7 +68,14 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      const response = await authApi.login(email, password);
+      let response;
+
+      try {
+        response = await authApi.login(email, password);
+      } catch (apiError) {
+        response = storageUtils.loginAuthUser({ email, password });
+      }
+
       if (response.success) {
         setAuthToken(response.token);
         setUser(response.user);
@@ -67,6 +92,7 @@ export const AuthProvider = ({ children }) => {
     clearAuthToken();
     setUser(null);
     setError(null);
+    storageUtils.clearUser();
   };
 
   const forgotPassword = async (email) => {

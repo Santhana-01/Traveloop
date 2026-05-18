@@ -10,10 +10,10 @@ const {
 } = require('../controllers/noteController');
 
 // Add note
-router.post('/:tripId/notes', auth, addNote);
+router.post('/trips/:tripId', auth, addNote);
 
 // Get notes
-router.get('/:tripId/notes', auth, getNotes);
+router.get('/trips/:tripId', auth, getNotes);
 
 // Update note
 router.put('/:noteId', auth, updateNote);

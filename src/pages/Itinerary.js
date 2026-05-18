@@ -5,7 +5,26 @@ import Header from '../components/Header';
 import ActivityForm from '../components/ActivityForm';
 import BudgetForm from '../components/BudgetForm';
 import DaySection from '../components/DaySection';
+import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/Itinerary.css';
+import { storageUtils } from '../utils/storage';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+  }
+};
 
 function Itinerary() {
   const { tripId } = useParams();
@@ -16,6 +35,8 @@ function Itinerary() {
   const [editingActivity, setEditingActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPublic, setIsPublic] = useState(false);
+  const [toggleLoading, setToggleLoading] = useState(false);
   const navigate = useNavigate();
 
   const loadTrip = useCallback(async () => {
@@ -34,11 +55,24 @@ function Itinerary() {
           }))
         };
         setTrip(transformedTrip);
+        setIsPublic(response.trip.isPublic || false);
       } else {
         setError('Trip not found');
       }
     } catch (err) {
-      setError(err.message);
+      console.log('Failed to load trip from API:', err.message);
+      const localTrips = storageUtils.getAllTrips();
+      const localTrip = localTrips.find(t => t.id === tripId || t._id === tripId);
+      if (localTrip) {
+        setTrip({
+          ...localTrip,
+          tripName: localTrip.name,
+          itinerary: (localTrip.itinerary || []).map((day, index) => ({ ...day, dayNumber: index + 1 }))
+        });
+        setError('Loaded from local storage.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -50,16 +84,34 @@ function Itinerary() {
 
   const handleAddDay = async () => {
     try {
-      const destName = `Day ${trip.itinerary.length + 1}`;
+      if (!trip || !trip.itinerary) return;
       await destinationApi.addDestination(tripId, { 
-        name: destName,
+        name: `Day ${trip.itinerary.length + 1}`,
         country: trip.name || 'Planned Location',
         startDate: trip.startDate,
         endDate: trip.endDate
       });
       loadTrip();
     } catch (err) {
-      alert('Error adding day: ' + err.message);
+      setError('Failed to add day.');
+    }
+  };
+
+  const handleTogglePublic = async () => {
+    try {
+      setToggleLoading(true);
+      if (isPublic) {
+        await tripApi.makePrivate(tripId);
+        setIsPublic(false);
+      } else {
+        await tripApi.makePublic(tripId);
+        setIsPublic(true);
+      }
+      loadTrip();
+    } catch (err) {
+      setError(`Failed to change trip privacy: ${err.message}`);
+    } finally {
+      setToggleLoading(false);
     }
   };
 
@@ -69,7 +121,7 @@ function Itinerary() {
         await destinationApi.deleteDestination(dayId);
         loadTrip();
       } catch (err) {
-        alert('Error deleting day: ' + err.message);
+        setError('Failed to delete day.');
       }
     }
   };
@@ -88,41 +140,68 @@ function Itinerary() {
 
   const handleSaveActivity = async (activityData) => {
     try {
-      // Find the day to get its dayNumber for date calculation
       const day = trip.itinerary.find(d => d.id === selectedDayId);
       const dayNum = day ? day.dayNumber : 1;
-      
-      // Calculate a valid date for the activity to satisfy backend validation
       const tripStart = new Date(trip.startDate);
       const activityDate = new Date(tripStart.getTime() + (dayNum - 1) * 24 * 60 * 60 * 1000);
 
-      const payload = {
-        ...activityData,
-        date: activityDate.toISOString() // This fixed the validation error
-      };
+      const payload = { ...activityData, date: activityDate.toISOString() };
+
+      // Optimistic update
+      const tempId = editingActivity ? (editingActivity._id || editingActivity.id) : Date.now().toString();
+      const newActivity = { ...payload, id: tempId, _id: tempId };
+      setTrip(prevTrip => {
+        const newItin = prevTrip.itinerary.map(d => {
+          if (d.id === selectedDayId) {
+            let newActs = [...(d.activities || [])];
+            if (editingActivity) {
+              newActs = newActs.map(a => (a.id === tempId || a._id === tempId) ? newActivity : a);
+            } else {
+              newActs.push(newActivity);
+            }
+            return { ...d, activities: newActs };
+          }
+          return d;
+        });
+        return { ...prevTrip, itinerary: newItin };
+      });
+      
+      setShowActivityForm(false);
+      setEditingActivity(null);
+      setSelectedDayId(null);
 
       if (editingActivity) {
-        await activityApi.updateActivity(editingActivity._id || editingActivity.id, payload);
+        await activityApi.updateActivity(tempId, payload);
       } else {
         await activityApi.addActivity(selectedDayId, payload);
       }
       
       loadTrip();
-      setShowActivityForm(false);
-      setEditingActivity(null);
-      setSelectedDayId(null);
     } catch (err) {
       alert('Error saving place: ' + err.message);
+      loadTrip(); // Revert on failure
     }
   };
 
   const handleDeleteActivity = async (dayId, activityId) => {
     if (window.confirm('Remove this place?')) {
+      // Optimistic update
+      setTrip(prevTrip => {
+        const newItin = prevTrip.itinerary.map(d => {
+          if (d.id === dayId) {
+            return { ...d, activities: (d.activities || []).filter(a => a.id !== activityId && a._id !== activityId) };
+          }
+          return d;
+        });
+        return { ...prevTrip, itinerary: newItin };
+      });
+
       try {
         await activityApi.deleteActivity(activityId);
         loadTrip();
       } catch (err) {
-        alert('Error deleting activity: ' + err.message);
+        alert('Failed to remove place.');
+        loadTrip(); // Revert
       }
     }
   };
@@ -132,129 +211,130 @@ function Itinerary() {
       await tripApi.updateBudget(tripId, budget);
       loadTrip();
     } catch (err) {
-      alert('Error updating budget: ' + err.message);
+      setError('Failed to update budget.');
     }
   };
 
   if (loading) {
     return (
       <div className="aurora-page-wrapper">
-        <div className="loading-container">
-          <div className="loader"></div>
-          <p>Loading your itinerary...</p>
+        <div className="loading-screen">
+          <div className="loading-text">Loading Itinerary</div>
+          <div className="loading-bar"></div>
         </div>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="aurora-page-wrapper">
-        <div className="error-container">
-          <p>Error: {error}</p>
-          <button className="btn-primary" onClick={() => navigate('/dashboard')}>Back to Dashboard</button>
-        </div>
-      </div>
-    );
-  }
-
-  const budget = trip.budget || { total: 0, transport: 0, stay: 0, food: 0, activity: 0 };
+  const budget = trip.budget || { total: 0 };
   const totalBudget = parseFloat(budget.total || 0);
 
   return (
     <div className="aurora-page-wrapper">
-      <Header 
-        title={trip.tripName}
-        showBackButton
-        onBack={() => navigate('/dashboard')}
-      />
-      <div className="itinerary-container">
-        <div className="trip-info">
-          <div>
+      <Header title={trip.tripName} showBackButton onBack={() => navigate('/dashboard')} />
+      <motion.div 
+        className="itinerary-container"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <motion.div className="trip-info glass-panel" variants={itemVariants}>
+          <div className="trip-info-header">
             <h2>{trip.tripName}</h2>
-            <p className="trip-dates">
-              🗓️ {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
-            </p>
-            {trip.description && <p className="trip-description">{trip.description}</p>}
+            <div className="trip-badges">
+              <span className="trip-date-badge">🗓️ {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}</span>
+              <motion.button 
+                className={`privacy-badge ${isPublic ? 'public' : 'private'}`}
+                onClick={handleTogglePublic}
+                disabled={toggleLoading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {isPublic ? '🌐 Public' : '🔒 Private'}
+              </motion.button>
+            </div>
           </div>
-          <div className="trip-stats-inline">
-            <div className="mini-stat">
-              <span className="label">Total Budget</span>
+          {trip.description && <p className="trip-description">{trip.description}</p>}
+          <div className="trip-stats-row">
+            <div className="trip-stat-item">
+              <span className="label">Total Days</span>
+              <span className="value">{(trip.itinerary || []).length}</span>
+            </div>
+            <div className="trip-stat-item">
+              <span className="label">Budget</span>
               <span className="value">₹{totalBudget.toLocaleString()}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="tabs">
-          <button
-            className={`tab-btn ${activeTab === 'itinerary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('itinerary')}
+        <motion.div className="tabs-container" variants={itemVariants}>
+          <div className="tabs">
+            <button className={`tab-btn ${activeTab === 'itinerary' ? 'active' : ''}`} onClick={() => setActiveTab('itinerary')}>Itinerary Plan</button>
+            <button className={`tab-btn ${activeTab === 'budget' ? 'active' : ''}`} onClick={() => setActiveTab('budget')}>Expense Tracker</button>
+          </div>
+        </motion.div>
+
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={activeTab}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.4 }}
+            className="tab-content"
           >
-            Itinerary Plan
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'budget' ? 'active' : ''}`}
-            onClick={() => setActiveTab('budget')}
-          >
-            Expense Tracker
-          </button>
-        </div>
+            {activeTab === 'itinerary' && (
+              <div className="itinerary-section">
+                {trip.itinerary && trip.itinerary.length === 0 ? (
+                  <motion.div className="empty-section glass-panel" variants={itemVariants}>
+                    <p>Your itinerary is empty. Let's start planning!</p>
+                    <button className="btn-primary" onClick={handleAddDay}>+ Add Day 1</button>
+                  </motion.div>
+                ) : (
+                  <>
+                    <motion.div className="days-list" variants={containerVariants}>
+                      {trip.itinerary.map((day) => (
+                        <DaySection
+                          key={day.id}
+                          day={day}
+                          onAddActivity={handleAddActivity}
+                          onEditActivity={handleEditActivity}
+                          onDeleteActivity={handleDeleteActivity}
+                          onDeleteDay={handleDeleteDay}
+                        />
+                      ))}
+                    </motion.div>
+                    <motion.button 
+                      className="btn-primary btn-add-day" 
+                      onClick={handleAddDay}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      + Add Next Day
+                    </motion.button>
+                  </>
+                )}
+              </div>
+            )}
 
-        <div className="tab-content">
-          {activeTab === 'itinerary' && (
-            <div className="itinerary-section">
-              {trip.itinerary && trip.itinerary.length === 0 ? (
-                <div className="empty-section">
-                  <p>Your itinerary is empty.</p>
-                  <button className="btn-primary" onClick={handleAddDay}>
-                    + Add Day 1
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="days-list">
-                    {trip.itinerary.map((day) => (
-                      <DaySection
-                        key={day.id}
-                        day={day}
-                        onAddActivity={handleAddActivity}
-                        onEditActivity={handleEditActivity}
-                        onDeleteActivity={handleDeleteActivity}
-                        onDeleteDay={handleDeleteDay}
-                      />
-                    ))}
-                  </div>
-                  <button className="btn-primary btn-add-day" onClick={handleAddDay}>
-                    + Add Next Day
-                  </button>
-                </>
-              )}
+            {activeTab === 'budget' && (
+              <motion.div className="budget-section glass-panel" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <BudgetForm budget={trip.budget} onSave={handleSaveBudget} totalBudget={totalBudget} />
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-              {showActivityForm && (
-                <ActivityForm
-                  onSave={handleSaveActivity}
-                  initialData={editingActivity}
-                  onCancel={() => {
-                    setShowActivityForm(false);
-                    setSelectedDayId(null);
-                    setEditingActivity(null);
-                  }}
-                />
-              )}
-            </div>
+        <AnimatePresence>
+          {showActivityForm && (
+            <ActivityForm
+              onSave={handleSaveActivity}
+              initialData={editingActivity}
+              onCancel={() => { setShowActivityForm(false); setSelectedDayId(null); setEditingActivity(null); }}
+            />
           )}
-
-          {activeTab === 'budget' && (
-            <div className="budget-section">
-              <BudgetForm
-                budget={trip.budget}
-                onSave={handleSaveBudget}
-                totalBudget={totalBudget}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

@@ -1,4 +1,21 @@
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const getApiBase = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL.replace(/\/$/, '');
+  }
+
+  if (typeof window !== 'undefined') {
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (isLocalHost) {
+      return 'http://localhost:5000/api';
+    }
+
+    return '/api';
+  }
+
+  return 'http://localhost:5000/api';
+};
+
+const API_BASE = getApiBase();
 
 const getAuthToken = () => {
   return localStorage.getItem('authToken');
@@ -83,6 +100,9 @@ export const tripApi = {
   makePublic: (tripId) =>
     apiCall('PUT', `/trips/${tripId}/make-public`),
   
+    makePrivate: (tripId) =>
+      apiCall('PUT', `/trips/${tripId}/make-private`),
+
   getPublicTrip: (publicUrl) =>
     apiCall('GET', `/trips/public/${publicUrl}`, null, true),
   
@@ -102,10 +122,10 @@ export const destinationApi = {
     apiCall('GET', `/trips/${tripId}/destinations`, null, true),
   
   updateDestination: (destId, destData) =>
-    apiCall('PUT', `/destinations/${destId}`, destData),
+    apiCall('PUT', `/trips/${destId}`, destData),
   
   deleteDestination: (destId) =>
-    apiCall('DELETE', `/destinations/${destId}`),
+    apiCall('DELETE', `/trips/${destId}`),
   
   reorderDestinations: (tripId, destIds) =>
     apiCall('PUT', `/trips/${tripId}/reorder-destinations`, { destinationIds: destIds })
@@ -132,10 +152,10 @@ export const activityApi = {
 // Packing API
 export const packingApi = {
   addItem: (tripId, itemData) =>
-    apiCall('POST', `/trips/${tripId}/packing`, itemData),
+    apiCall('POST', `/packing/trips/${tripId}`, itemData),
   
   getItems: (tripId) =>
-    apiCall('GET', `/trips/${tripId}/packing`),
+    apiCall('GET', `/packing/trips/${tripId}`),
   
   updateItem: (itemId, itemData) =>
     apiCall('PUT', `/packing/${itemId}`, itemData),
@@ -147,16 +167,16 @@ export const packingApi = {
     apiCall('PUT', `/packing/${itemId}/toggle`),
   
   resetList: (tripId) =>
-    apiCall('DELETE', `/trips/${tripId}/packing/reset`)
+    apiCall('DELETE', `/packing/trips/${tripId}/reset`)
 };
 
 // Notes API
 export const notesApi = {
   addNote: (tripId, noteData) =>
-    apiCall('POST', `/trips/${tripId}/notes`, noteData),
+    apiCall('POST', `/notes/trips/${tripId}`, noteData),
   
   getNotes: (tripId) =>
-    apiCall('GET', `/trips/${tripId}/notes`),
+    apiCall('GET', `/notes/trips/${tripId}`),
   
   updateNote: (noteId, noteData) =>
     apiCall('PUT', `/notes/${noteId}`, noteData),
@@ -211,6 +231,18 @@ export const userApi = {
   
   getPublicProfile: (userId) =>
     apiCall('GET', `/users/${userId}/public`, null, true)
+};
+
+// Budget and Expenses API
+export const budgetApi = {
+  updateBudget: (tripId, budgetData) =>
+    apiCall('PUT', `/trips/${tripId}/budget`, budgetData),
+  addExpense: (tripId, expenseData) =>
+    apiCall('POST', `/trips/${tripId}/expenses`, expenseData),
+  updateExpense: (tripId, expenseId, expenseData) =>
+    apiCall('PUT', `/trips/${tripId}/expenses/${expenseId}`, expenseData),
+  deleteExpense: (tripId, expenseId) =>
+    apiCall('DELETE', `/trips/${tripId}/expenses/${expenseId}`),
 };
 
 export {

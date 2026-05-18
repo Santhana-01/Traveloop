@@ -1,109 +1,142 @@
-/* Day Section & Activity Cards - Simplified Aurora */
-@import '../styles/aurora-theme.css';
-
 .day-section {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(56, 189, 248, 0.15);
-  border-radius: 18px;
-  padding: 24px;
-  margin-bottom: 30px;
+  padding: 3rem;
+  border-radius: 24px;
+  margin-bottom: 3rem;
 }
 
 .day-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .day-title h3 {
-  margin: 0;
-  font-size: 20px;
-  color: white;
-  font-weight: 700;
+  margin: 0 0 0.4rem 0;
+  font-size: 2rem;
+  color: #fff;
+  font-weight: 800;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Activity Card Layout */
-.activity-card.simplified {
-  background: rgba(15, 23, 42, 0.6);
+.day-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.activity-card {
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 15px;
+  border-radius: 16px;
+  padding: 2rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  transition: all 0.2s;
-}
-
-.activity-card.simplified:hover {
-  background: rgba(15, 23, 42, 0.8);
-  border-color: rgba(56, 189, 248, 0.3);
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .activity-top-row {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 8px;
+  gap: 1.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .activity-top-row h4 {
   margin: 0;
-  font-size: 17px;
-  color: white;
+  font-size: 1.25rem;
+  color: #fff;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
 }
 
 .activity-time-badge {
-  background: rgba(56, 189, 248, 0.1);
-  color: #38BDF8;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 12px;
+  background: rgba(71, 181, 255, 0.1);
+  color: #47B5FF;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border: 1px solid rgba(71, 181, 255, 0.2);
 }
 
 .activity-notes {
-  font-size: 13px;
-  color: #94A3B8;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
+  line-height: 1.6;
 }
 
-/* Actions */
 .activity-actions {
   display: flex;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .act-btn {
-  background: none;
-  border: none;
-  font-size: 12px;
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  font-weight: 800;
   cursor: pointer;
-  padding: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
 }
 
-.act-btn.edit { color: #38BDF8; }
-.act-btn.delete { color: #ef4444; }
+.act-btn.edit { color: #47B5FF; }
+.act-btn.delete { color: #FF8E72; }
 
-.act-btn:hover { text-decoration: underline; }
+.act-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
 
-/* Add Activity Button */
 .btn-add-activity {
   width: 100%;
-  padding: 12px;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px dashed rgba(56, 189, 248, 0.4);
-  border-radius: 10px;
-  color: var(--aurora-cyan, #38BDF8);
-  font-weight: 700;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: #47B5FF;
+  font-weight: 800;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
-.btn-add-activity:hover {
-  background: rgba(56, 189, 248, 0.2);
-  border-style: solid;
+.empty-activities {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.btn-icon-delete {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .day-section { padding: 2rem; }
+  .activity-card { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .activity-actions { width: 100%; justify-content: flex-end; }
 }

@@ -68,7 +68,7 @@ exports.getTripById = async (req, res) => {
 // @access  Private
 exports.createTrip = async (req, res) => {
   try {
-    const { name, description, startDate, endDate } = req.body;
+    const { name, description, startDate, endDate, budget } = req.body;
 
     if (!name || !startDate || !endDate) {
       return res.status(400).json({
@@ -82,7 +82,8 @@ exports.createTrip = async (req, res) => {
       name,
       description,
       startDate,
-      endDate
+      endDate,
+      budget: budget || { total: 0, transport: 0, stay: 0, food: 0, activity: 0 }
     });
 
     res.status(201).json({
@@ -159,8 +160,12 @@ exports.deleteTrip = async (req, res) => {
     }
 
     // Delete related documents
-    await Destination.deleteMany({ trip: req.params.id });
     await Activity.deleteMany({ destination: { $in: trip.destinations } });
+    await Destination.deleteMany({ trip: req.params.id });
+    
+    // Use dynamic import or require here if needed, but safer to just use models if imported
+    // await require('../models/PackingItem').deleteMany({ trip: req.params.id });
+    // await require('../models/Note').deleteMany({ trip: req.params.id });
 
     await Trip.findByIdAndDelete(req.params.id);
 
@@ -205,6 +210,43 @@ exports.makePublic = async (req, res) => {
       success: true,
       message: 'Trip is now public',
       publicUrl: trip.publicUrl
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Make trip private
+// @route   PUT /api/trips/:id/make-private
+// @access  Private
+exports.makePrivate = async (req, res) => {
+  try {
+    let trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({
+        success: false,
+        message: 'Trip not found'
+      });
+    }
+
+    if (trip.user.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    trip.isPublic = false;
+    trip.publicUrl = null;
+    await trip.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Trip is now private'
     });
   } catch (error) {
     res.status(500).json({
@@ -324,5 +366,111 @@ exports.updateBudget = async (req, res) => {
       success: false,
       message: error.message
     });
+  }
+};
+
+// @desc    Update budget for a trip
+// @route   PUT /api/trips/:id/budget
+// @access  Private
+exports.updateBudget = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({ success: false, message: 'Trip not found' });
+    }
+
+    if (trip.user.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    trip.budget = req.body;
+    await trip.save();
+
+    res.status(200).json({ success: true, budget: trip.budget });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Add an expense to a trip
+// @route   POST /api/trips/:id/expenses
+// @access  Private
+exports.addExpense = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({ success: false, message: 'Trip not found' });
+    }
+
+    if (trip.user.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    trip.expenses.push(req.body);
+    await trip.save();
+
+    res.status(201).json({ success: true, expenses: trip.expenses });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update an expense in a trip
+// @route   PUT /api/trips/:id/expenses/:expenseId
+// @access  Private
+exports.updateExpense = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({ success: false, message: 'Trip not found' });
+    }
+
+    if (trip.user.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const expense = trip.expenses.id(req.params.expenseId);
+    if (!expense) {
+      return res.status(404).json({ success: false, message: 'Expense not found' });
+    }
+
+    expense.set(req.body);
+    await trip.save();
+
+    res.status(200).json({ success: true, expenses: trip.expenses });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Delete an expense from a trip
+// @route   DELETE /api/trips/:id/expenses/:expenseId
+// @access  Private
+exports.deleteExpense = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({ success: false, message: 'Trip not found' });
+    }
+
+    if (trip.user.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const expense = trip.expenses.id(req.params.expenseId);
+    if (!expense) {
+      return res.status(404).json({ success: false, message: 'Expense not found' });
+    }
+
+    expense.remove();
+    await trip.save();
+
+    res.status(200).json({ success: true, expenses: trip.expenses });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

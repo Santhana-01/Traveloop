@@ -3,7 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { tripApi } from '../api/client';
 import Header from '../components/Header';
+import MagneticEffect from '../components/common/MagneticEffect';
+import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/MyTrips.css';
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+};
 
 function MyTrips() {
   const { logout } = useAuth();
@@ -12,38 +19,22 @@ function MyTrips() {
   const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadTrips();
-  }, []);
+  useEffect(() => { loadTrips(); }, []);
 
   const loadTrips = async () => {
     try {
       setLoading(true);
       const response = await tripApi.getUserTrips();
-      if (response.success) {
-        setTrips(response.trips);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+      if (response.success) setTrips(response.trips);
+    } catch (err) { console.error(err); } finally { setLoading(false); }
   };
 
   const handleDelete = async (tripId) => {
-    if (window.confirm('Are you sure you want to delete this trip?')) {
-      try {
-        await tripApi.deleteTrip(tripId);
-        loadTrips();
-      } catch (err) {
-        alert('Error deleting trip');
-      }
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+    if (!window.confirm('Are you sure?')) return;
+    try {
+      await tripApi.deleteTrip(tripId);
+      loadTrips();
+    } catch (err) { alert('Error deleting'); }
   };
 
   const filteredTrips = trips.filter((trip) => {
@@ -54,92 +45,67 @@ function MyTrips() {
   });
 
   return (
-    <>
-      <Header 
-        title="My Trips" 
-        onLogout={handleLogout}
-        showBackButton
-        onBack={() => navigate('/dashboard')}
-      />
-      <div className="my-trips-container">
-        <div className="trips-header">
-          <h2>All My Trips</h2>
-          <button
-            className="btn-primary"
-            onClick={() => navigate('/create-trip')}
-          >
-            + New Trip
-          </button>
-        </div>
-
-        <div className="filter-tabs">
-          {['all', 'upcoming', 'completed', 'public'].map((f) => (
-            <button
-              key={f}
-              className={`filter-tab ${filter === f ? 'active' : ''}`}
-              onClick={() => setFilter(f)}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        {loading ? (
-          <p>Loading trips...</p>
-        ) : filteredTrips.length === 0 ? (
-          <div className="empty-state">
-            <p>No trips found</p>
-          </div>
-        ) : (
-          <div className="trips-table">
-            <div className="table-header">
-              <div className="col-name">Trip Name</div>
-              <div className="col-dates">Dates</div>
-              <div className="col-dests">Destinations</div>
-              <div className="col-status">Status</div>
-              <div className="col-actions">Actions</div>
-            </div>
-            {filteredTrips.map((trip) => (
-              <div key={trip._id} className="table-row">
-                <div className="col-name">
-                  <strong>{trip.name}</strong>
-                </div>
-                <div className="col-dates">
-                  {new Date(trip.startDate).toLocaleDateString()} -{' '}
-                  {new Date(trip.endDate).toLocaleDateString()}
-                </div>
-                <div className="col-dests">{trip.destinations.length}</div>
-                <div className="col-status">
-                  <span className={`status-badge ${trip.status}`}>
-                    {trip.status}
-                  </span>
-                </div>
-                <div className="col-actions">
-                  <button
-                    className="action-btn view"
-                    onClick={() => navigate(`/trip/${trip._id}`)}
-                  >
-                    View
-                  </button>
-                  <button
-                    className="action-btn edit"
-                    onClick={() => navigate(`/trip/${trip._id}`)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="action-btn delete"
-                    onClick={() => handleDelete(trip._id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+    <div className="trips-immersive">
+      <motion.main 
+        className="trips-content content-flow"
+        initial="hidden"
+        animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+      >
+        <motion.section className="trips-hero" variants={itemVariants}>
+          <h1 className="trips-title-fluid">All My <span className="highlight">Journeys</span></h1>
+          <div className="trips-filter-row">
+            {['all', 'upcoming', 'completed', 'public'].map((f) => (
+              <MagneticEffect key={f} strength={3}>
+                <button className={`filter-tab-fluid ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+                  {f}
+                </button>
+              </MagneticEffect>
             ))}
           </div>
-        )}
-      </div>
-    </>
+        </motion.section>
+
+        <motion.section className="trips-list-fluid" variants={itemVariants}>
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <div className="fluid-loader">Navigating the currents...</div>
+            ) : filteredTrips.length === 0 ? (
+              <p className="empty-msg">The ocean is calm. No trips found.</p>
+            ) : (
+              <div className="trips-fluid-grid">
+                {filteredTrips.map((trip) => (
+                  <motion.div key={trip._id} className="trip-item-fluid" layout variants={itemVariants} whileHover={{ x: 10 }}>
+                    <div className="trip-main-info" onClick={() => navigate(`/trip/${trip._id}`)}>
+                      <h3 className="trip-name-fluid">{trip.name}</h3>
+                      <div className="trip-meta-fluid">
+                        <span>{new Date(trip.startDate).toLocaleDateString()}</span>
+                        <div className="dot-separator"></div>
+                        <span>{trip.destinations.length} Stops</span>
+                        <div className="dot-separator"></div>
+                        <span className={`status-text ${trip.status}`}>{trip.status}</span>
+                      </div>
+                    </div>
+                    <div className="trip-actions-fluid">
+                      <MagneticEffect strength={3}><button className="fluid-action" onClick={() => navigate(`/trip/${trip._id}`)}>View</button></MagneticEffect>
+                      <MagneticEffect strength={3}><button className="fluid-action" onClick={() => navigate(`/create-trip`, { state: { tripId: trip._id } })}>Edit</button></MagneticEffect>
+                      <MagneticEffect strength={3}><button className="fluid-action delete" onClick={() => handleDelete(trip._id)}>Delete</button></MagneticEffect>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </AnimatePresence>
+        </motion.section>
+
+        <motion.section className="trips-footer-fluid" variants={itemVariants}>
+          <MagneticEffect strength={6}>
+            <button className="btn-primary-fluid" onClick={() => navigate('/create-trip')}>
+              Start New Journey
+            </button>
+          </MagneticEffect>
+        </motion.section>
+      </motion.main>
+    </div>
   );
 }
 

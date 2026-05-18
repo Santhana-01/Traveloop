@@ -1,5 +1,12 @@
 /* Share Trip Page Styling */
-
+.share-trip-page {
+  background:
+    radial-gradient(circle at top left, rgba(153, 184, 152, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(254, 206, 171, 0.14), transparent 20%),
+    linear-gradient(135deg, #f8f5f1 0%, #f0ebe5 46%, #efe0db 100%);
+  min-height: calc(100vh - 80px);
+  padding: 2rem 0;
+}
 .share-container {
   max-width: 900px;
   margin: 40px auto 60px;
@@ -7,10 +14,11 @@
 }
 
 .share-card {
-  background: white;
+  background: rgba(255, 252, 247, 0.95);
   border-radius: 12px;
   padding: 40px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(153, 184, 152, 0.15);
+  border: 1px solid rgba(153, 184, 152, 0.18);
 }
 
 /* Trip Info Header */
@@ -22,13 +30,13 @@
 
 .trip-info h2 {
   margin: 0 0 8px;
-  color: #333;
+  color: #000000;
   font-size: 28px;
 }
 
 .trip-dates {
   margin: 0;
-  color: #999;
+  color: #000000;
   font-size: 14px;
 }
 
@@ -40,7 +48,7 @@
 .faq-section h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: #333;
+  color: #000000;
   font-size: 18px;
 }
 
@@ -71,15 +79,16 @@
 
 /* Share Link Section */
 .share-link-section {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  background: radial-gradient(circle at top left, rgba(153, 184, 152, 0.1), transparent 30%),
+              linear-gradient(135deg, #f8f5f1 0%, #f0ebe5 100%);
   border-radius: 10px;
   padding: 25px;
   margin-bottom: 30px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #99B898;
 }
 
 .section-desc {
-  color: #666;
+  color: #000000;
   margin: 0 0 20px;
   font-size: 14px;
   line-height: 1.6;
@@ -95,23 +104,23 @@
 .share-link-input {
   flex: 1;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(153, 184, 152, 0.3);
   border-radius: 6px;
   font-size: 13px;
   font-family: 'Courier New', monospace;
-  color: #333;
+  color: #000000;
 }
 
 .share-link-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #99B898;
+  box-shadow: 0 0 0 3px rgba(153, 184, 152, 0.1);
 }
 
 .btn-copy {
   padding: 12px 20px;
-  background: #667eea;
-  color: white;
+  background: #E84A5F;
+  color: #000000;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -122,11 +131,11 @@
 }
 
 .btn-copy:hover {
-  background: #5568d3;
+  background: #d83d52;
 }
 
 .btn-copy.copied {
-  background: #51cf66;
+  background: #99B898;
 }
 
 /* Social Share */
@@ -152,7 +161,7 @@
   height: 50px;
   border: none;
   border-radius: 50%;
-  color: white;
+  color: #000000;
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
@@ -211,7 +220,7 @@
 .btn-make-private {
   padding: 12px 24px;
   background: #ff6b6b;
-  color: white;
+  color: #000000;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -263,7 +272,7 @@
 .btn-make-public {
   padding: 14px 32px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #000000;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -375,7 +384,7 @@
 /* Animation */
 @keyframes slideDown {
   from {
-    opacity: 0;
+    
     transform: translateY(-10px);
   }
   to {

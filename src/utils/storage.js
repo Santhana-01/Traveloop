@@ -2,6 +2,22 @@
 
 const STORAGE_KEY_TRIPS = 'traveloop_trips';
 const STORAGE_KEY_USER = 'traveloop_user';
+const STORAGE_KEY_AUTH_USERS = 'traveloop_auth_users';
+
+const readJson = (key, fallback) => {
+  const value = localStorage.getItem(key);
+  if (!value) return fallback;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
+const writeJson = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
 
 export const storageUtils = {
   // Trips management
@@ -150,5 +166,76 @@ export const storageUtils = {
 
   clearUser: () => {
     localStorage.removeItem(STORAGE_KEY_USER);
+  },
+
+  getAuthUsers: () => {
+    return readJson(STORAGE_KEY_AUTH_USERS, []);
+  },
+
+  getAuthUserByEmail: (email) => {
+    const users = storageUtils.getAuthUsers();
+    return users.find((user) => user.email.toLowerCase() === email.toLowerCase());
+  },
+
+  registerAuthUser: ({ name, email, password }) => {
+    const users = storageUtils.getAuthUsers();
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (users.some((user) => user.email.toLowerCase() === normalizedEmail)) {
+      throw new Error('Email is already in use');
+    }
+
+    const user = {
+      id: Date.now().toString(),
+      name: name.trim(),
+      email: normalizedEmail,
+      password,
+      profilePhoto: null
+    };
+
+    writeJson(STORAGE_KEY_AUTH_USERS, [...users, user]);
+    storageUtils.setUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      profilePhoto: user.profilePhoto
+    });
+
+    return {
+      success: true,
+      token: `local-${user.id}`,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        profilePhoto: user.profilePhoto
+      }
+    };
+  },
+
+  loginAuthUser: ({ email, password }) => {
+    const user = storageUtils.getAuthUserByEmail(email);
+
+    if (!user || user.password !== password) {
+      throw new Error('Invalid credentials');
+    }
+
+    storageUtils.setUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      profilePhoto: user.profilePhoto || null
+    });
+
+    return {
+      success: true,
+      token: `local-${user.id}`,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        profilePhoto: user.profilePhoto || null
+      }
+    };
   }
 };

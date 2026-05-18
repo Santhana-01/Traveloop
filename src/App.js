@@ -1,120 +1,159 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AnimatePresence } from 'framer-motion';
 
-// Pages
-import Login from './pages/Login2';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard-v2';
+// Layout
+import MainLayout from './components/layout/MainLayout';
+import PageTransition from './components/common/PageTransition';
+import CursorTrail from './components/common/CursorTrail';
+
+// Modular Features
+import LandingPage from './pages/LandingPage';
+import Login from './features/auth/Login';
+import Register from './features/auth/Register';
+import Dashboard from './features/dashboard/Dashboard';
+import ItineraryBuilder from './features/itinerary/ItineraryBuilder';
+import BudgetPlanner from './pages/BudgetPlanner';
+
+// Keep some in pages for now until moved
 import CreateTrip from './pages/CreateTrip';
 import MyTrips from './pages/MyTrips';
-import Itinerary from './pages/Itinerary';
 import UserProfile from './pages/UserProfile';
 import TripNotes from './pages/TripNotes';
 import PackingChecklist from './pages/PackingChecklist';
-import Reviews from './pages/Reviews';
-// import ShareTrip from './pages/ShareTrip';
 import CitySearch from './pages/CitySearch';
-// import AuroraTrailsLanding from './pages/AuroraTrailsLanding';
+import ShareTrip from './pages/ShareTrip';
 
 import './App.css';
+
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Public routes */}
+        <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+
+        {/* Protected routes with MainLayout */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Overview">
+                <Dashboard />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trips"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="My Journeys">
+                <MyTrips />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-trip"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="New Journey">
+                <CreateTrip />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trip/:tripId"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Itinerary Builder">
+                <ItineraryBuilder />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/budget"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Budget Planner">
+                <BudgetPlanner />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checklist"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Packing List">
+                <PackingChecklist />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="My Notes">
+                <TripNotes />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/explore-destinations"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Explore Cities">
+                <CitySearch />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Identity">
+                <UserProfile />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/public-trips"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Community">
+                <ShareTrip />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
 
 function App() {
   return (
     <AuthProvider>
+      <CursorTrail />
       <Router>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* Protected routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/trips"
-            element={
-              <ProtectedRoute>
-                <MyTrips />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create-trip"
-            element={
-              <ProtectedRoute>
-                <CreateTrip />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/trip/:tripId"
-            element={
-              <ProtectedRoute>
-                <Itinerary />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/itinerary/:tripId"
-            element={
-              <ProtectedRoute>
-                <Itinerary />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/trip/:tripId/notes"
-            element={
-              <ProtectedRoute>
-                <TripNotes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/trip/:tripId/packing"
-            element={
-              <ProtectedRoute>
-                <PackingChecklist />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/trip/:tripId/reviews"
-            element={
-              <ProtectedRoute>
-                <Reviews />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/explore-destinations"
-            element={
-              <ProtectedRoute>
-                <CitySearch />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
+        <AnimatedRoutes />
       </Router>
     </AuthProvider>
   );

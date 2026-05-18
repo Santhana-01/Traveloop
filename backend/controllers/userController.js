@@ -25,10 +25,14 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { name, bio, profilePhoto } = req.body;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (bio !== undefined) updateData.bio = bio;
+    if (profilePhoto !== undefined) updateData.profilePhoto = profilePhoto;
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { name, bio, profilePhoto },
+      updateData,
       { new: true, runValidators: true }
     );
 

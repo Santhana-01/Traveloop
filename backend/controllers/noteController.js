@@ -131,35 +131,23 @@ exports.deleteNote = async (req, res) => {
     const note = await Note.findById(req.params.noteId);
 
     if (!note) {
-      return res.status(404).json({
-        success: false,
-        message: 'Note not found'
-      });
+      return res.status(404).json({ success: false, message: 'Note not found' });
     }
 
     const trip = await Trip.findById(note.trip);
     if (trip.user.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized'
-      });
+      return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    await Note.findByIdAndDelete(req.params.noteId);
+    await note.remove();
 
-    res.status(200).json({
-      success: true,
-      message: 'Note deleted successfully'
-    });
+    res.status(200).json({ success: true, message: 'Note removed' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    Pin/unpin note
+// @desc    Toggle note pin status
 // @route   PUT /api/notes/:noteId/toggle-pin
 // @access  Private
 exports.togglePin = async (req, res) => {
@@ -167,32 +155,19 @@ exports.togglePin = async (req, res) => {
     const note = await Note.findById(req.params.noteId);
 
     if (!note) {
-      return res.status(404).json({
-        success: false,
-        message: 'Note not found'
-      });
+      return res.status(404).json({ success: false, message: 'Note not found' });
     }
 
     const trip = await Trip.findById(note.trip);
     if (trip.user.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized'
-      });
+      return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
     note.isPinned = !note.isPinned;
     await note.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Note pin status updated',
-      note
-    });
+    res.status(200).json({ success: true, note });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };

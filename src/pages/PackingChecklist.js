@@ -2,7 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { packingApi } from '../api/client';
 import Header from '../components/Header';
+import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/PackingChecklist.css';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 20 }
+};
 
 function PackingChecklist() {
   const { tripId } = useParams();
@@ -13,22 +28,21 @@ function PackingChecklist() {
   const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     item: '',
-    category: 'essentials',
+    category: 'Other',
     quantity: 1,
     priority: 'medium'
   });
 
-  const categories = ['essentials', 'clothing', 'toiletries', 'electronics', 'documents', 'other'];
+  const categories = ['Clothing', 'Documents', 'Electronics', 'Toiletries', 'Accessories', 'Other'];
   const priorities = ['low', 'medium', 'high'];
 
   useEffect(() => {
     loadItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tripId]);
 
   const loadItems = async () => {
     try {
-      const response = await packingApi.getPackingItems(tripId);
+      const response = await packingApi.getItems(tripId);
       if (response.success) {
         setItems(response.items);
       }
@@ -43,317 +57,171 @@ function PackingChecklist() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value === 'quantity' ? parseInt(value) : value
+      [name]: name === 'quantity' ? parseInt(value) : value
     });
   };
 
   const handleAddItem = async () => {
     if (!formData.item.trim()) {
       setMessage('Please enter an item');
+      setTimeout(() => setMessage(''), 3000);
       return;
     }
 
+    const newItem = {
+      item: formData.item,
+      category: formData.category,
+      quantity: formData.quantity,
+      priority: formData.priority,
+    };
+
     try {
-      const response = await packingApi.addPackingItem(tripId, formData);
+      const response = await packingApi.addItem(tripId, newItem);
       if (response.success) {
         setItems([...items, response.item]);
-        setFormData({
-          item: '',
-          category: 'essentials',
-          quantity: 1,
-          priority: 'medium'
-        });
-        setShowForm(false);
-        setMessage('Item added to packing list!');
-        setTimeout(() => setMessage(''), 3000);
+        setFormData({ item: '', category: 'Other', quantity: 1, priority: 'medium' });
+      } else {
+        throw new Error('API reported failure');
       }
     } catch (err) {
-      setMessage('Error adding item');
+      setMessage('Error adding item. Please check your connection.');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const handleTogglePacked = async (itemId, packed) => {
+    const previousItems = [...items];
+    setItems(items.map(item => item._id === itemId ? { ...item, isPacked: !packed } : item));
     try {
-      const response = await packingApi.togglePackingStatus(tripId, itemId);
+      const response = await packingApi.togglePacked(itemId);
       if (response.success) {
-        setItems(
-          items.map(item =>
-            item._id === itemId ? { ...item, packed: !item.packed } : item
-          )
-        );
+        setItems(items.map(item => item._id === itemId ? response.item : item));
+      } else {
+        setItems(previousItems);
       }
     } catch (err) {
-      setMessage('Error updating item');
+      setItems(previousItems);
+      console.error(err);
     }
   };
 
   const handleDeleteItem = async (itemId) => {
+    const previousItems = [...items];
+    setItems(items.filter(item => item._id !== itemId));
     try {
-      const response = await packingApi.deletePackingItem(tripId, itemId);
-      if (response.success) {
-        setItems(items.filter(item => item._id !== itemId));
+      const response = await packingApi.deleteItem(itemId);
+      if (!response.success) {
+        setItems(previousItems);
       }
     } catch (err) {
-      setMessage('Error deleting item');
-    }
-  };
-
-  const handleResetChecklist = async () => {
-    if (!window.confirm('Reset all items to unpacked? This cannot be undone.')) return;
-
-    try {
-      const response = await packingApi.resetPackingList(tripId);
-      if (response.success) {
-        setItems(response.items);
-        setMessage('Packing list reset!');
-        setTimeout(() => setMessage(''), 3000);
-      }
-    } catch (err) {
-      setMessage('Error resetting list');
+      setItems(previousItems);
+      console.error(err);
     }
   };
 
   const getCategoryEmoji = (category) => {
-    const emojis = {
-      essentials: '🔑',
-      clothing: '👕',
-      toiletries: '🧴',
-      electronics: '📱',
-      documents: '📄',
-      other: '📦'
-    };
+    const emojis = { Accessories: '🔑', Clothing: '👕', Toiletries: '🧴', Electronics: '📱', Documents: '📄', Other: '📦' };
     return emojis[category] || '📦';
   };
 
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: '#51cf66',
-      medium: '#fcc419',
-      high: '#ff6b6b'
-    };
-    return colors[priority] || colors.medium;
-  };
-
-  // Group items by category
-  const groupedItems = categories.reduce((acc, category) => {
-    acc[category] = items.filter(item => item.category === category);
-    return acc;
-  }, {});
-
-  // Calculate stats
   const totalItems = items.length;
-  const packedItems = items.filter(item => item.packed).length;
+  const packedItems = items.filter(item => item.isPacked).length;
   const packedPercentage = totalItems > 0 ? Math.round((packedItems / totalItems) * 100) : 0;
 
   return (
-    <>
-      <Header
-        title="Packing Checklist"
-        showBackButton
-        onBack={() => navigate(`/trip/${tripId}`)}
-      />
-      <div className="packing-container">
-        {message && <div className="success-message">{message}</div>}
+    <div className="aurora-page-wrapper">
+      <div className="packing-container-v2">
+        <AnimatePresence>
+          {message && (
+            <motion.div 
+              className="message-banner"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              style={{
+                background: 'rgba(255, 87, 87, 0.15)',
+                color: '#FF5757',
+                padding: '1rem',
+                borderRadius: '12px',
+                marginBottom: '2rem',
+                textAlign: 'center',
+                border: '1px solid rgba(255, 87, 87, 0.3)'
+              }}
+            >
+              {message}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Progress Section */}
-        {totalItems > 0 && (
-          <div className="progress-section">
-            <div className="progress-header">
-              <h3>Packing Progress</h3>
-              <span className="progress-percentage">{packedPercentage}%</span>
-            </div>
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${packedPercentage}%` }}
-              />
-            </div>
-            <div className="progress-stats">
-              <div className="stat">
-                <strong>{packedItems}</strong> of {totalItems} packed
-              </div>
-              <div className="stat">
-                <strong>{totalItems - packedItems}</strong> remaining
-              </div>
-            </div>
+        <div className="checklist-hero">
+          <h1>Packing Checklist</h1>
+          <p>{packedItems} of {totalItems} items packed</p>
+          <div className="slim-progress-bar">
+            <motion.div 
+              className="slim-progress-fill" 
+              initial={{ width: 0 }}
+              animate={{ width: `${packedPercentage}%` }}
+            />
           </div>
-        )}
+        </div>
 
-        {/* Add Item Button */}
-        {!showForm && (
-          <button
-            className="btn-add-item"
-            onClick={() => setShowForm(true)}
-          >
-            <span>+ Add Item</span>
-          </button>
-        )}
+        <div className="add-item-inline">
+          <input 
+            type="text" 
+            name="item" 
+            placeholder="What else do you need to pack?" 
+            value={formData.item} 
+            onChange={handleInputChange}
+            onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
+          />
+          <button onClick={handleAddItem}>Add</button>
+        </div>
 
-        {/* Add Item Form */}
-        {showForm && (
-          <div className="item-form-card">
-            <h3>Add Packing Item</h3>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Item</label>
-                <input
-                  type="text"
-                  name="item"
-                  value={formData.item}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Passport, Sunscreen..."
-                />
-              </div>
-              <div className="form-group">
-                <label>Quantity</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                  min="1"
-                />
-              </div>
-            </div>
+        <div className="checklist-v2-grid">
+          {categories.map(category => {
+            const categoryItems = items.filter(item => item.category === category);
+            if (categoryItems.length === 0) return null;
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Category</label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>
-                      {getCategoryEmoji(cat)} {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Priority</label>
-                <select
-                  name="priority"
-                  value={formData.priority}
-                  onChange={handleInputChange}
-                >
-                  {priorities.map(p => (
-                    <option key={p} value={p}>
-                      {p.charAt(0).toUpperCase() + p.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button className="btn-primary" onClick={handleAddItem}>
-                Add to List
-              </button>
-              <button
-                className="btn-secondary"
-                onClick={() => {
-                  setShowForm(false);
-                  setFormData({
-                    item: '',
-                    category: 'essentials',
-                    quantity: 1,
-                    priority: 'medium'
-                  });
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Items by Category */}
-        {totalItems > 0 && (
-          <div className="items-section">
-            {categories.map(category => {
-              const categoryItems = groupedItems[category];
-              if (categoryItems.length === 0) return null;
-
-              const categoryPacked = categoryItems.filter(item => item.packed).length;
-
-              return (
-                <div key={category} className="category-group">
-                  <div className="category-header">
-                    <h3>
-                      {getCategoryEmoji(category)} {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </h3>
-                    <span className="category-count">
-                      {categoryPacked}/{categoryItems.length} packed
-                    </span>
-                  </div>
-                  <div className="items-list">
+            return (
+              <div key={category} className="category-v2-section">
+                <h3 className="category-v2-title">{getCategoryEmoji(category)} {category}</h3>
+                <div className="todo-list-v2">
+                  <AnimatePresence mode="popLayout">
                     {categoryItems.map(item => (
-                      <div
+                      <motion.div
                         key={item._id}
-                        className={`item-row ${item.packed ? 'packed' : ''}`}
+                        layout
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        className={`todo-row-v2 ${item.isPacked ? 'is-packed' : ''}`}
                       >
-                        <div className="item-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={item.packed}
-                            onChange={() => handleTogglePacked(item._id, item.packed)}
-                            id={`item-${item._id}`}
-                          />
-                          <label htmlFor={`item-${item._id}`}></label>
-                        </div>
-                        <div className="item-details">
-                          <div className="item-name">{item.item}</div>
-                          <div className="item-meta">
-                            <span className="quantity">Qty: {item.quantity}</span>
-                            <span
-                              className="priority"
-                              style={{ color: getPriorityColor(item.priority) }}
-                            >
-                              {item.priority.toUpperCase()}
-                            </span>
+                        <div className="todo-left" onClick={() => handleTogglePacked(item._id, item.isPacked)}>
+                          <div className={`todo-checkbox-v2 ${item.isPacked ? 'checked' : ''}`}>
+                            {item.isPacked && <span>✓</span>}
+                          </div>
+                          <div className="todo-text-v2">
+                            <span className="todo-name-v2">{item.name}</span>
+                            {item.quantity > 1 && <span className="todo-qty-v2">x{item.quantity}</span>}
                           </div>
                         </div>
-                        <button
-                          className="btn-delete-small"
-                          onClick={() => handleDeleteItem(item._id)}
-                        >
-                          ✕
-                        </button>
-                      </div>
+                        <button className="todo-delete-v2" onClick={() => handleDeleteItem(item._id)}>✕</button>
+                      </motion.div>
                     ))}
-                  </div>
+                  </AnimatePresence>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
+        </div>
+
+        {totalItems === 0 && (
+          <div className="empty-checklist-v2">
+            <p>Your checklist is empty. Start adding items above!</p>
           </div>
         )}
-
-        {/* Empty State */}
-        {totalItems === 0 && !showForm && (
-          <div className="empty-state">
-            <div className="empty-icon">🧳</div>
-            <h3>No items yet</h3>
-            <p>Start building your packing list to prepare for your trip.</p>
-          </div>
-        )}
-
-        {/* Reset Button */}
-        {totalItems > 0 && (
-          <div className="action-footer">
-            <button
-              className="btn-reset"
-              onClick={handleResetChecklist}
-            >
-              ↻ Reset Checklist
-            </button>
-          </div>
-        )}
-
-        {loading && <div className="loading">Loading checklist...</div>}
       </div>
-    </>
+    </div>
   );
 }
 

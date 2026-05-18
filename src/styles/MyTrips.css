@@ -1,204 +1,143 @@
-.my-trips-container {
-  max-width: 1200px;
+.trips-immersive {
+  min-height: 100vh;
+  padding-bottom: 8rem;
+}
+
+.trips-content {
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 0 20px 40px;
+  padding: 6rem 2rem;
 }
 
-.trips-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+.trips-hero {
+  margin-bottom: 4rem;
 }
 
-.trips-header h2 {
-  font-size: 28px;
-  color: var(--aurora-white, #FFFFFF);
-  background: linear-gradient(135deg, #8B5CF6 0%, #38BDF8 100%);
+.trips-title-fluid {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.trips-title-fluid .highlight {
+  background: linear-gradient(135deg, #47B5FF 0%, #1363DF 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.filter-tabs {
+.trips-filter-row {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-.filter-tab {
-  padding: 10px 16px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  color: var(--aurora-grey, #9CA3AF);
-}
-
-.filter-tab:hover {
-  border-color: var(--aurora-cyan, #38BDF8);
-  color: var(--aurora-cyan, #38BDF8);
-}
-
-.filter-tab.active {
-  background: linear-gradient(135deg, #8B5CF6 0%, #38BDF8 50%, #06B6D4 100%);
-  color: white;
-  border-color: transparent;
-}
-
-.trips-table {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.table-header {
-  display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr;
-  gap: 20px;
-  padding: 20px;
-  background: rgba(56, 189, 248, 0.1);
-  font-weight: 600;
-  color: var(--aurora-cyan, #38BDF8);
-  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+.filter-tab-fluid {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.6rem 1.4rem;
+  border-radius: 30px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
 }
 
-.table-row {
-  display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr;
-  gap: 20px;
-  padding: 20px;
-  align-items: center;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.1);
-  transition: background 0.2s;
+.filter-tab-fluid.active {
+  background: #1363DF;
+  color: #fff;
+  border-color: #1363DF;
+  box-shadow: 0 5px 15px rgba(19, 99, 223, 0.3);
 }
 
-.table-row:hover {
-  background: rgba(56, 189, 248, 0.05);
-}
-
-.table-row:last-child {
-  border-bottom: none;
-}
-
-.col-name strong {
-  color: var(--aurora-white, #FFFFFF);
-  font-size: 16px;
-}
-
-.col-dates,
-.col-dests {
-  color: var(--aurora-grey, #9CA3AF);
-  font-size: 14px;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status-badge.planning {
-  background: rgba(56, 189, 248, 0.2);
-  color: var(--aurora-cyan, #38BDF8);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.status-badge.ongoing {
-  background: rgba(139, 92, 246, 0.2);
-  color: #A78BFA;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-}
-
-.status-badge.completed {
-  background: rgba(34, 197, 94, 0.2);
-  color: #86EFAC;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.col-actions {
+/* Trips List Fluid */
+.trips-fluid-grid {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
 }
 
-.action-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 13px;
+.trip-item-fluid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.trip-item-fluid:hover {
+  border-bottom-color: rgba(71, 181, 255, 0.2);
+}
+
+.trip-name-fluid {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.trip-meta-fluid {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.action-btn.view {
-  background: rgba(56, 189, 248, 0.15);
-  color: var(--aurora-cyan, #38BDF8);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+.dot-separator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.action-btn.view:hover {
-  background: rgba(56, 189, 248, 0.25);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+.status-text {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  font-weight: 800;
 }
 
-.action-btn.delete {
-  background: rgba(239, 68, 68, 0.15);
-  color: #FCA5A5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+.status-text.upcoming { color: #47B5FF; }
+.status-text.completed { color: #51cf66; }
+
+.trip-actions-fluid {
+  display: flex;
+  gap: 2rem;
 }
 
-.action-btn.delete:hover {
-  background: rgba(239, 68, 68, 0.25);
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+.fluid-action {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.3s ease;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
+.fluid-action:hover {
+  color: #fff;
 }
 
-@media (max-width: 1024px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 1.5fr 1fr 0.8fr 1fr;
-  }
+.fluid-action.delete:hover {
+  color: #FF8E72;
+}
 
-  .col-dests {
-    display: none;
-  }
+.trips-footer-fluid {
+  display: flex;
+  justify-content: center;
+  padding-top: 4rem;
 }
 
 @media (max-width: 768px) {
-  .trips-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-
-  .table-header,
-  .table-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .col-dates {
-    display: none;
-  }
-
-  .col-actions {
-    grid-column: 1 / -1;
-  }
+  .trips-title-fluid { font-size: 2.5rem; }
+  .trip-item-fluid { flex-direction: column; align-items: flex-start; gap: 2rem; }
 }

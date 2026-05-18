@@ -1,0 +1,40 @@
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--ocean-blue);
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 0 10px var(--ocean-blue);
+}
+
+.cursor-outline {
+  position: fixed;
+  top: -16px;
+  left: -16px;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--ocean-blue);
+  border-radius: 50%;
+  z-index: 9998;
+  pointer-events: none;
+  transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+.cursor-outline.hovering {
+  width: 60px;
+  height: 60px;
+  top: -26px;
+  left: -26px;
+  background-color: rgba(71, 181, 255, 0.1);
+  border-color: var(--ocean-cyan);
+}
+
+@media (max-width: 768px) {
+  .cursor-dot, .cursor-outline {
+    display: none;
+  }
+}

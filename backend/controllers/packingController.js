@@ -6,7 +6,7 @@ const Trip = require('../models/Trip');
 // @access  Private
 exports.addPackingItem = async (req, res) => {
   try {
-    const { name, category, quantity, priority, notes } = req.body;
+    const { item, category, quantity, priority, notes } = req.body;
     const { tripId } = req.params;
 
     const trip = await Trip.findById(tripId);
@@ -24,9 +24,9 @@ exports.addPackingItem = async (req, res) => {
       });
     }
 
-    const item = await PackingItem.create({
+    const newItem = await PackingItem.create({
       trip: tripId,
-      name,
+      name: item,
       category,
       quantity,
       priority,
@@ -36,7 +36,7 @@ exports.addPackingItem = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Packing item added successfully',
-      item
+      item: newItem
     });
   } catch (error) {
     res.status(500).json({
@@ -123,43 +123,7 @@ exports.updatePackingItem = async (req, res) => {
   }
 };
 
-// @desc    Delete packing item
-// @route   DELETE /api/packing/:itemId
-// @access  Private
-exports.deletePackingItem = async (req, res) => {
-  try {
-    const item = await PackingItem.findById(req.params.itemId);
-
-    if (!item) {
-      return res.status(404).json({
-        success: false,
-        message: 'Packing item not found'
-      });
-    }
-
-    const trip = await Trip.findById(item.trip);
-    if (trip.user.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized'
-      });
-    }
-
-    await PackingItem.findByIdAndDelete(req.params.itemId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Packing item deleted successfully'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-// @desc    Toggle packing status
+// @desc    Toggle packing item status
 // @route   PUT /api/packing/:itemId/toggle
 // @access  Private
 exports.togglePackingStatus = async (req, res) => {
@@ -186,8 +150,43 @@ exports.togglePackingStatus = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Packing status updated',
       item
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Delete packing item
+// @route   DELETE /api/packing/:itemId
+// @access  Private
+exports.deletePackingItem = async (req, res) => {
+  try {
+    const item = await PackingItem.findById(req.params.itemId);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: 'Packing item not found'
+      });
+    }
+
+    const trip = await Trip.findById(item.trip);
+    if (trip.user.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    await item.remove();
+
+    res.status(200).json({
+      success: true,
+      message: 'Item removed'
     });
   } catch (error) {
     res.status(500).json({

@@ -10,18 +10,18 @@ const {
 } = require('../controllers/activityController');
 
 // Add activity to destination
-router.post('/:destId/activities', auth, addActivity);
+router.post('/destinations/:destId/activities', auth, addActivity);
 
 // Get activities for destination
-router.get('/:destId/activities', getActivities);
+router.get('/destinations/:destId/activities', getActivities);
 
 // Update activity
-router.put('/:actId', auth, updateActivity);
+router.put('/activities/:actId', auth, updateActivity);
 
 // Delete activity
-router.delete('/:actId', auth, deleteActivity);
+router.delete('/activities/:actId', auth, deleteActivity);
 
 // Get activity suggestions (public)
-router.get('/suggestions/:city', getSuggestions);
+router.get('/activities/suggestions/:city', getSuggestions);
 
 module.exports = router;

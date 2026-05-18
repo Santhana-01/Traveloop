@@ -8,9 +8,13 @@ const {
   updateTrip,
   deleteTrip,
   makePublic,
+    makePrivate,
   getPublicTrip,
   copyPublicTrip,
-  updateBudget
+  updateBudget,
+  addExpense,
+  updateExpense,
+  deleteExpense
 } = require('../controllers/tripController');
 
 // Public routes
@@ -24,6 +28,10 @@ router.get('/:id', auth, getTripById);
 router.put('/:id', auth, updateTrip);
 router.delete('/:id', auth, deleteTrip);
 router.put('/:id/make-public', auth, makePublic);
+router.put('/:id/make-private', auth, makePrivate);
 router.put('/:id/budget', auth, updateBudget);
+router.post('/:id/expenses', auth, addExpense);
+router.put('/:id/expenses/:expenseId', auth, updateExpense);
+router.delete('/:id/expenses/:expenseId', auth, deleteExpense);
 
 module.exports = router;

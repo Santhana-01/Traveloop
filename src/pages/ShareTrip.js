@@ -105,12 +105,6 @@ function ShareTrip() {
   }
 
   return (
-    <>
-      <Header
-        title="Share Trip"
-        showBackButton
-        onBack={() => navigate(`/trip/${tripId}`)}
-      />
       <div className="share-container">
         {message && <div className="success-message">{message}</div>}
 
@@ -280,7 +274,6 @@ function ShareTrip() {
           </div>
         </div>
       </div>
-    </>
   );
 }
 

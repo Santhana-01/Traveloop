@@ -13,7 +13,7 @@ const connectDB = async () => {
     return mongoose.connection;
   } catch (error) {
     console.error('✗ MongoDB Connection Error:', error.message);
-    process.exit(1);
+    console.warn('⚠️ Server will continue running, but database operations will fail.');
   }
 };
 
